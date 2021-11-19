@@ -3,18 +3,22 @@
 #include <math.h>
 
 
-struct article_t{
+typedef struct article_t{
     char name[31];
     int category;
     double price;
-};
+} article_t;
 
-struct articleheader_t{
+typedef struct articleheader_t{
     char artilcename[31];
     char category[31];
     char price[31];
     char vat[31];
-};
+} articleheader_t;
+
+typedef struct records_t{
+    article_t article;
+} records_t;
 
 double round_price(double wert){
 
@@ -24,6 +28,46 @@ double round_price(double wert){
     return wert;
 
 }
+
+void bubbleSort(struct records_t records[], int counter,int sort_type)
+{
+    records_t tmp;
+    double number;
+    double number1;
+
+    if(sort_type == 0){
+
+        for(int i = 0; i < counter;i++){
+            for(int j = 0;j<counter -1;j++){
+
+                number = records[j].article.price;
+                number1 = records[j + 1].article.price;
+
+                if(number > number1){
+                    tmp = records[j];
+                    records[j] = records[j + 1];
+                    records[j + 1] = tmp;
+                }
+            }
+        }
+    }
+    else{
+        for(int i = 0; i < counter;i++){
+            for(int j = 0;j<counter -1;j++){
+
+                number = records[j].article.price;
+                number1 = records[j + 1].article.price;
+
+                if(number < number1){
+                    tmp = records[j];
+                    records[j] = records[j + 1];
+                    records[j + 1] = tmp;
+                }
+            }
+        }
+    }
+}
+
 
 double calculate_new_price(int category, double price, char name[]){
     if(category == 15){
@@ -38,14 +82,16 @@ double calculate_new_price(int category, double price, char name[]){
     else if(category == 100 || category == 20){
         price = price + (price / 100 * 10);
     }
-    printf("%.2lf",price);
     return price;
 }
 
 int main() {
 
-    struct article_t article;
-    struct articleheader_t articleheader;
+    article_t article;
+    articleheader_t articleheader;
+    records_t records[100];
+
+    int counter = 0;
     double newprice;
     FILE * myfile = NULL;
     FILE * mynewfile = NULL;
@@ -54,21 +100,25 @@ int main() {
     mynewfile = fopen("NewArtikel.txt","w");
     // do while solange nicht endoffile !FEOF(pointer)
 
-    fscanf(myfile,"%[^\t]\t%[^\t]\t%[^\t]\n",articleheader.artilcename,
+    fscanf(myfile,"%[^\t]\t%[^\t]\t%[^\n]\n",articleheader.artilcename,
            articleheader.category,articleheader.price);
 
-    printf("%s, %s, %s, %s ",articleheader.artilcename,
-           articleheader.category,articleheader.price, articleheader.vat);
     fprintf(mynewfile,"%s\t%s\t%s",articleheader.artilcename,articleheader.category,articleheader.price);
 
     do{
 
         fscanf(myfile,"%[^\t]\t%d\t%lf.2\n",article.name,&article.category,&article.price);
-        newprice = round_price(calculate_new_price(article.category,article.price,article.name));
-        fprintf(mynewfile,"%s\t%d\t%.2lf",article.name,article.category,newprice);
+        article.price = round_price(calculate_new_price(article.category,article.price,article.name));
+        records[counter].article = article;
+        counter += 1;
 
     } while (!feof(myfile));
+    bubbleSort(records, counter,1);
 
+    for(int i = 0; i < counter;i++){
+        fprintf(mynewfile,"%s\t%d\t%.2lf",records[i].article.name,records[i].article.category,
+                records[i].article.price);
+    }
     fclose(myfile);
     fclose(mynewfile);
     return 0;
