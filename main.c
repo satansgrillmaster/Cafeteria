@@ -98,13 +98,14 @@ int main() {
 
     myfile = fopen("Artikel.txt","r");
     mynewfile = fopen("NewArtikel.txt","w");
-    // do while solange nicht endoffile !FEOF(pointer)
 
+    /* read tableheader */
     fscanf(myfile,"%[^\t]\t%[^\t]\t%[^\n]\n",articleheader.artilcename,
            articleheader.category,articleheader.price);
 
     fprintf(mynewfile,"%s\t%s\t%s",articleheader.artilcename,articleheader.category,articleheader.price);
 
+    /* read all article records and save them in array */
     do{
 
         fscanf(myfile,"%[^\t]\t%d\t%lf.2\n",article.name,&article.category,&article.price);
@@ -113,8 +114,11 @@ int main() {
         counter += 1;
 
     } while (!feof(myfile));
+
+    /* sort the records */
     bubbleSort(records, counter,1);
 
+    /* add records to new file */
     for(int i = 0; i < counter;i++){
         fprintf(mynewfile,"%s\t%d\t%.2lf",records[i].article.name,records[i].article.category,
                 records[i].article.price);
