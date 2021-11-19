@@ -2,7 +2,7 @@
 #include <string.h>
 #include <math.h>
 
-
+/* struct declaration */
 typedef struct article_t{
     char name[31];
     int category;
@@ -20,6 +20,7 @@ typedef struct records_t{
     article_t article;
 } records_t;
 
+/* round the price of article */
 double round_price(double wert){
 
     wert *= 20;
@@ -29,6 +30,7 @@ double round_price(double wert){
 
 }
 
+/* bubblesort for records */
 void bubbleSort(struct records_t records[], int counter,int sort_type)
 {
     records_t tmp;
@@ -68,7 +70,7 @@ void bubbleSort(struct records_t records[], int counter,int sort_type)
     }
 }
 
-
+/* function to calculate new price */
 double calculate_new_price(int category, double price, char name[]){
     if(category == 15){
         price = price + 0.1;
@@ -92,14 +94,14 @@ int main() {
     records_t records[100];
 
     int counter = 0;
-    double newprice;
+
     FILE * myfile = NULL;
     FILE * mynewfile = NULL;
 
     myfile = fopen("Artikel.txt","r");
     mynewfile = fopen("NewArtikel.txt","w");
 
-    /* read tableheader */
+    /* read tableheader and write them in new file */
     fscanf(myfile,"%[^\t]\t%[^\t]\t%[^\n]\n",articleheader.artilcename,
            articleheader.category,articleheader.price);
 
@@ -123,6 +125,8 @@ int main() {
         fprintf(mynewfile,"%s\t%d\t%.2lf",records[i].article.name,records[i].article.category,
                 records[i].article.price);
     }
+
+    /* close the files */
     fclose(myfile);
     fclose(mynewfile);
     return 0;
